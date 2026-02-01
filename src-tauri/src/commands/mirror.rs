@@ -59,8 +59,14 @@ pub async fn start_mirror(
         args.push("--no-audio".to_string());
     }
 
-    // Orientation (0=portrait, 1=landscape, 2=upsidedown, 3=reverse_landscape)
-    args.push(format!("--rotation={}", options.orientation));
+    // Orientation: 0=portrait, 1=landscape (90°), 2=upsidedown (180°), 3=reverse_landscape (270°)
+    let angle = match options.orientation {
+        1 => 90,   // landscape
+        3 => 270,  // reverse landscape
+        2 => 180,  // upsidedown
+        _ => 0,    // portrait
+    };
+    args.push(format!("--orientation={}", angle));
 
     // Quality settings
     args.push(format!("--max-size={}", options.resolution));
@@ -94,7 +100,8 @@ pub async fn start_mirror(
         use tauri_plugin_shell::process::CommandEvent;
         while let Some(event) = rx.recv().await {
             match event {
-                CommandEvent::Terminated(_) => {
+                CommandEvent::Terminated(payload) => {
+                    eprintln!("scrcpy terminated for {}: code={:?}, signal={:?}", serial, payload.code, payload.signal);
                     // Clean up when process terminates
                     if let Ok(mut processes) = processes_arc.lock() {
                         processes.remove(&serial);
@@ -103,6 +110,14 @@ pub async fn start_mirror(
                 }
                 CommandEvent::Error(err) => {
                     eprintln!("scrcpy error for {}: {}", serial, err);
+                }
+                CommandEvent::Stdout(line) => {
+                    let text = String::from_utf8_lossy(&line);
+                    eprintln!("scrcpy stdout for {}: {}", serial, text.trim());
+                }
+                CommandEvent::Stderr(line) => {
+                    let text = String::from_utf8_lossy(&line);
+                    eprintln!("scrcpy stderr for {}: {}", serial, text.trim());
                 }
                 _ => {}
             }
