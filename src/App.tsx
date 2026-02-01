@@ -80,18 +80,29 @@ function App() {
   }, []);
 
   return (
-    <div className="flex flex-col h-full bg-[var(--color-bg-primary)]">
+    <div className="flex flex-col h-full bg-[var(--color-bg-primary)] relative overflow-hidden">
+      {/* Subtle gradient background */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: `
+            radial-gradient(ellipse 80% 50% at 50% -20%, rgba(139, 92, 246, 0.04), transparent),
+            radial-gradient(ellipse 60% 40% at 100% 100%, rgba(139, 92, 246, 0.02), transparent)
+          `,
+        }}
+      />
+
       <Header
         onSettingsClick={() => setShowSettings(true)}
         onRefresh={handleRefresh}
       />
 
-      <main className="flex-1 overflow-y-auto p-4">
+      <main className="flex-1 overflow-y-auto px-4 py-5 relative">
         <DeviceList />
       </main>
 
-      <footer className="px-4 py-2 border-t border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
-        <p className="text-xs text-[var(--color-text-muted)] text-center">
+      <footer className="px-4 py-3 border-t border-[var(--color-border-subtle)] relative">
+        <p className="text-[11px] text-[var(--color-text-muted)] text-center tracking-wide">
           Connect Android devices via USB to start mirroring
         </p>
       </footer>
