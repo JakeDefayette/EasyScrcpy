@@ -39,10 +39,6 @@
       "binaries/scrcpy",
       "binaries/adb"
     ],
-    "resources": {
-      "binaries/scrcpy-server": "binaries/",
-      "binaries/*.dll": "binaries/"
-    },
     "windows": {
       "wix": {
         "language": "en-US"
