@@ -70,31 +70,32 @@ jobs:
       - name: Setup external binaries (macOS Intel)
         if: matrix.target == 'x86_64-apple-darwin'
         run: |
-          # Download scrcpy and adb for macOS Intel if not present
-          if [ ! -f "src-tauri/binaries/scrcpy-x86_64-apple-darwin" ]; then
-            echo "::warning::scrcpy-x86_64-apple-darwin binary not found. Please add it to src-tauri/binaries/"
-            # Placeholder: Download from official release or build
-            # curl -L -o scrcpy.zip https://github.com/Genymobile/scrcpy/releases/download/v2.7/scrcpy-macos-v2.7.zip
-          fi
-          if [ ! -f "src-tauri/binaries/adb-x86_64-apple-darwin" ]; then
-            echo "::warning::adb-x86_64-apple-darwin binary not found. Please add it to src-tauri/binaries/"
-            # Placeholder: Download from Android SDK platform-tools
-          fi
-          chmod +x src-tauri/binaries/*-x86_64-apple-darwin 2>/dev/null || true
+          chmod +x src-tauri/binaries/*-x86_64-apple-darwin
 
       - name: Setup external binaries (Windows)
         if: matrix.platform == 'windows-latest'
         shell: pwsh
         run: |
-          # Verify Windows binaries exist
-          if (-not (Test-Path "src-tauri/binaries/scrcpy-x86_64-pc-windows-msvc.exe")) {
-            Write-Warning "scrcpy-x86_64-pc-windows-msvc.exe binary not found. Please add it to src-tauri/binaries/"
-            # Placeholder: Download from official release
-            # Invoke-WebRequest -Uri "https://github.com/Genymobile/scrcpy/releases/download/v2.7/scrcpy-win64-v2.7.zip" -OutFile scrcpy.zip
+          # Verify Windows binaries and DLLs exist
+          $required = @(
+            "scrcpy-x86_64-pc-windows-msvc.exe",
+            "adb-x86_64-pc-windows-msvc.exe",
+            "SDL2.dll",
+            "avcodec-61.dll",
+            "avformat-61.dll",
+            "avutil-59.dll",
+            "swresample-5.dll",
+            "AdbWinApi.dll",
+            "AdbWinUsbApi.dll",
+            "libusb-1.0.dll"
+          )
+          foreach ($file in $required) {
+            if (-not (Test-Path "src-tauri/binaries/$file")) {
+              Write-Error "$file not found in src-tauri/binaries/"
+              exit 1
+            }
           }
-          if (-not (Test-Path "src-tauri/binaries/adb-x86_64-pc-windows-msvc.exe")) {
-            Write-Warning "adb-x86_64-pc-windows-msvc.exe binary not found. Please add it to src-tauri/binaries/"
-          }
+          Write-Host "All Windows binaries verified"
 
       - name: Build Tauri app
         uses: tauri-apps/tauri-action@v0
