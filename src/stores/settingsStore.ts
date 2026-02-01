@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { AppConfig, getConfig, saveSettings as saveSettingsApi } from "../lib/tauri";
+import { toast } from "./toastStore";
 
 interface SettingsState {
   config: AppConfig | null;
@@ -21,6 +22,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       set({ config, isLoading: false });
     } catch (e) {
       set({ error: String(e), isLoading: false });
+      toast.error("Failed to load settings");
     }
   },
 
@@ -39,6 +41,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
       }
     } catch (e) {
       set({ error: String(e) });
+      toast.error("Failed to save settings");
     }
   },
 }));

@@ -1,9 +1,11 @@
 import { useEffect, useState, useCallback } from "react";
 import { useDeviceStore } from "./stores/deviceStore";
 import { useSettingsStore } from "./stores/settingsStore";
+import { toast } from "./stores/toastStore";
 import { Header } from "./components/Header";
 import { DeviceList } from "./components/DeviceList";
 import { Settings } from "./components/Settings";
+import { ToastContainer } from "./components/Toast";
 import { stopAllMirrors } from "./lib/tauri";
 
 const POLLING_INTERVAL = 2000;
@@ -57,8 +59,9 @@ function App() {
         try {
           await stopAllMirrors();
           clearActiveMirrors();
+          toast.success("All mirrors stopped");
         } catch (err) {
-          console.error("Failed to stop all:", err);
+          toast.error("Failed to stop all mirrors");
         }
       }
 
@@ -108,6 +111,7 @@ function App() {
       </footer>
 
       {showSettings && <Settings onClose={() => setShowSettings(false)} />}
+      <ToastContainer />
     </div>
   );
 }

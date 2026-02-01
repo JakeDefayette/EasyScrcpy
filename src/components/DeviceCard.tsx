@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Device, startMirror, stopMirror, saveDeviceLabel } from "../lib/tauri";
 import { useDeviceStore } from "../stores/deviceStore";
 import { useSettingsStore } from "../stores/settingsStore";
+import { toast } from "../stores/toastStore";
 import { EditLabelModal } from "./EditLabelModal";
 
 interface DeviceCardProps {
@@ -31,7 +32,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
       });
       addActiveMirror(device.serial);
     } catch (e) {
-      console.error("Failed to start mirror:", e);
+      toast.error(`Failed to start mirror for ${displayName}`);
     } finally {
       setIsStarting(false);
     }
@@ -43,7 +44,7 @@ export function DeviceCard({ device }: DeviceCardProps) {
       await stopMirror(device.serial);
       removeActiveMirror(device.serial);
     } catch (e) {
-      console.error("Failed to stop mirror:", e);
+      toast.error(`Failed to stop mirror for ${displayName}`);
     } finally {
       setIsStopping(false);
     }
@@ -53,8 +54,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
     try {
       await saveDeviceLabel(device.serial, label);
       await fetchDevices();
+      toast.success("Label saved");
     } catch (e) {
-      console.error("Failed to save label:", e);
+      toast.error("Failed to save device label");
     }
     setShowLabelModal(false);
   };

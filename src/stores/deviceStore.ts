@@ -1,5 +1,9 @@
 import { create } from "zustand";
 import { Device, getDevices, getActiveMirrors } from "../lib/tauri";
+import { toast } from "./toastStore";
+
+let lastDeviceErrorTime = 0;
+const ERROR_DEBOUNCE_MS = 10000;
 
 interface DeviceState {
   devices: Device[];
@@ -26,6 +30,11 @@ export const useDeviceStore = create<DeviceState>((set, get) => ({
       set({ devices, isLoading: false });
     } catch (e) {
       set({ error: String(e), isLoading: false });
+      const now = Date.now();
+      if (now - lastDeviceErrorTime > ERROR_DEBOUNCE_MS) {
+        lastDeviceErrorTime = now;
+        toast.error("Failed to detect devices. Is ADB running?");
+      }
     }
   },
 
