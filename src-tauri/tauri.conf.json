@@ -39,6 +39,10 @@
       "binaries/scrcpy",
       "binaries/adb"
     ],
+    "resources": [
+      "binaries/AdbWinApi.dll",
+      "binaries/AdbWinUsbApi.dll"
+    ],
     "windows": {
       "wix": {
         "language": "en-US"
