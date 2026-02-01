@@ -48,8 +48,8 @@ fn default_bitrate() -> u32 {
 }
 
 fn get_config_path() -> Result<PathBuf, String> {
-    let config_dir = dirs::config_dir()
-        .ok_or_else(|| "Could not determine config directory".to_string())?;
+    let config_dir =
+        dirs::config_dir().ok_or_else(|| "Could not determine config directory".to_string())?;
     let app_config_dir = config_dir.join("EasyScrcpy");
     fs::create_dir_all(&app_config_dir)
         .map_err(|e| format!("Failed to create config directory: {}", e))?;
@@ -61,18 +61,16 @@ pub fn load_config() -> Result<AppConfig, String> {
     if !config_path.exists() {
         return Ok(AppConfig::default());
     }
-    let content = fs::read_to_string(&config_path)
-        .map_err(|e| format!("Failed to read config: {}", e))?;
-    serde_json::from_str(&content)
-        .map_err(|e| format!("Failed to parse config: {}", e))
+    let content =
+        fs::read_to_string(&config_path).map_err(|e| format!("Failed to read config: {}", e))?;
+    serde_json::from_str(&content).map_err(|e| format!("Failed to parse config: {}", e))
 }
 
 fn save_config(config: &AppConfig) -> Result<(), String> {
     let config_path = get_config_path()?;
     let content = serde_json::to_string_pretty(config)
         .map_err(|e| format!("Failed to serialize config: {}", e))?;
-    fs::write(&config_path, content)
-        .map_err(|e| format!("Failed to write config: {}", e))
+    fs::write(&config_path, content).map_err(|e| format!("Failed to write config: {}", e))
 }
 
 #[tauri::command]

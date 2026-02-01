@@ -61,11 +61,7 @@ pub async fn enable_wifi_mode(app: AppHandle, serial: String) -> Result<WifiMode
 }
 
 #[tauri::command]
-pub async fn connect_wifi_device(
-    app: AppHandle,
-    ip: String,
-    port: u16,
-) -> Result<(), String> {
+pub async fn connect_wifi_device(app: AppHandle, ip: String, port: u16) -> Result<(), String> {
     let shell = app.shell();
     let address = format!("{}:{}", ip, port);
 
