@@ -35,7 +35,7 @@ jobs:
           bun run build
 
   rust-check:
-    runs-on: ubuntu-latest
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
 
@@ -44,15 +44,13 @@ jobs:
         with:
           components: rustfmt, clippy
 
-      - name: Install Linux dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
-
       - name: Rust cache
         uses: swatinem/rust-cache@v2
         with:
           workspaces: './src-tauri -> target'
+
+      - name: Make binaries executable
+        run: chmod +x src-tauri/binaries/*-apple-darwin
 
       - name: Check formatting
         run: cargo fmt --manifest-path src-tauri/Cargo.toml -- --check
