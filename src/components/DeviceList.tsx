@@ -10,7 +10,7 @@ export function DeviceList() {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 stagger-children">
       {devices.map((device) => (
         <DeviceCard key={device.serial} device={device} />
       ))}

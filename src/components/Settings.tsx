@@ -21,82 +21,118 @@ export function Settings({ onClose }: SettingsProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16">
-      <div className="absolute inset-0 bg-black/60" onClick={onClose} />
-      <div className="relative bg-[var(--color-bg-secondary)] border border-[var(--color-border)] rounded-lg shadow-xl w-full max-w-sm mx-4">
-        <div className="flex items-center justify-between p-4 border-b border-[var(--color-border)]">
-          <h2 className="text-sm font-medium text-[var(--color-text-primary)]">Settings</h2>
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-12 animate-fade-in">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
+
+      {/* Modal */}
+      <div className="relative glass border border-[var(--color-border)] rounded-xl shadow-2xl w-full max-w-sm mx-4 animate-scale-in overflow-hidden">
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-subtle)]">
+          <h2 className="text-[13px] font-semibold text-[var(--color-text-primary)]">Settings</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded hover:bg-[var(--color-bg-tertiary)] transition-colors"
+            className="p-1.5 -mr-1.5 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] transition-all"
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5 text-[var(--color-text-muted)]">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
-        <div className="p-4 space-y-4">
+        <div className="p-4 space-y-1">
           {/* Audio Toggle */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[var(--color-text-primary)]">Audio forwarding</p>
-              <p className="text-xs text-[var(--color-text-muted)]">Requires Android 11+</p>
+          <div className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-tertiary)] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[var(--color-text-muted)]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-4.72a.75.75 0 011.28.53v15.88a.75.75 0 01-1.28.53l-4.72-4.72H4.51c-.88 0-1.704-.507-1.938-1.354A9.01 9.01 0 012.25 12c0-.83.112-1.633.322-2.396C2.806 8.756 3.63 8.25 4.51 8.25H6.75z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Audio forwarding</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Requires Android 11+</p>
+              </div>
             </div>
             <button
               onClick={handleAudioToggle}
-              className={`relative w-10 h-6 rounded-full transition-colors ${
-                config?.audio_enabled ? "bg-[var(--color-accent)]" : "bg-[var(--color-border)]"
+              className={`relative w-11 h-6 rounded-full transition-all duration-200 ${
+                config?.audio_enabled
+                  ? "bg-[var(--color-accent)]"
+                  : "bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]"
               }`}
             >
               <div
-                className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  config?.audio_enabled ? "translate-x-5" : "translate-x-1"
+                className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-200 ${
+                  config?.audio_enabled ? "left-6" : "left-1"
                 }`}
               />
             </button>
           </div>
 
           {/* Touch Indicators Toggle */}
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm text-[var(--color-text-primary)]">Touch indicators</p>
-              <p className="text-xs text-[var(--color-text-muted)]">Show touch points on screen</p>
+          <div className="flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-[var(--color-bg-tertiary)] transition-colors">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-tertiary)] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[var(--color-text-muted)]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Touch indicators</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Show touch points on screen</p>
+              </div>
             </div>
             <button
               onClick={handleTouchesToggle}
-              className={`relative w-10 h-6 rounded-full transition-colors ${
-                config?.show_touches ? "bg-[var(--color-accent)]" : "bg-[var(--color-border)]"
+              className={`relative w-11 h-6 rounded-full transition-all duration-200 ${
+                config?.show_touches
+                  ? "bg-[var(--color-accent)]"
+                  : "bg-[var(--color-bg-tertiary)] border border-[var(--color-border)]"
               }`}
             >
               <div
-                className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform ${
-                  config?.show_touches ? "translate-x-5" : "translate-x-1"
+                className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-all duration-200 ${
+                  config?.show_touches ? "left-6" : "left-1"
                 }`}
               />
             </button>
           </div>
+        </div>
 
-          {/* Advanced Section */}
-          <div className="pt-2 border-t border-[var(--color-border)]">
-            <button
-              onClick={() => setShowAdvanced(!showAdvanced)}
-              className="flex items-center justify-between w-full py-2 text-sm text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] transition-colors"
+        {/* Advanced Section */}
+        <div className="border-t border-[var(--color-border-subtle)]">
+          <button
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="flex items-center justify-between w-full px-4 py-3 text-[12px] font-medium text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-tertiary)] transition-all"
+          >
+            <span>Advanced</span>
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              className={`w-4 h-4 transition-transform duration-200 ${showAdvanced ? "rotate-180" : ""}`}
             >
-              <span>Advanced</span>
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                className={`w-4 h-4 transition-transform ${showAdvanced ? "rotate-180" : ""}`}
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-              </svg>
-            </button>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
 
-            {showAdvanced && <WifiSetup />}
-          </div>
+          {showAdvanced && (
+            <div className="px-4 pb-4 animate-slide-down">
+              <WifiSetup />
+            </div>
+          )}
+        </div>
+
+        {/* Keyboard shortcut hint */}
+        <div className="px-4 py-2.5 bg-[var(--color-bg-tertiary)]/50 border-t border-[var(--color-border-subtle)]">
+          <p className="text-[10px] text-[var(--color-text-muted)] text-center">
+            Press <kbd className="px-1.5 py-0.5 rounded bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] font-mono text-[9px]">Esc</kbd> to close
+          </p>
         </div>
       </div>
     </div>

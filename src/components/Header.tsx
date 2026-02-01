@@ -21,23 +21,44 @@ export function Header({ onSettingsClick, onRefresh }: HeaderProps) {
   };
 
   return (
-    <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border)] bg-[var(--color-bg-secondary)]">
-      <div className="flex items-center gap-2">
-        <h1 className="text-sm font-semibold text-[var(--color-text-primary)]">EasyScrcpy</h1>
-        {hasActiveMirrors && (
-          <span className="px-1.5 py-0.5 text-xs font-medium bg-[var(--color-accent)]/20 text-[var(--color-accent)] rounded">
-            {activeMirrors.size} active
-          </span>
-        )}
+    <header className="flex items-center justify-between px-4 py-3 border-b border-[var(--color-border-subtle)] bg-[var(--color-bg-secondary)]/80 backdrop-blur-sm relative">
+      <div className="flex items-center gap-3">
+        {/* Logo mark */}
+        <div className="w-6 h-6 rounded-md bg-gradient-to-br from-[var(--color-accent)] to-[var(--color-accent-muted)] flex items-center justify-center">
+          <svg viewBox="0 0 24 24" fill="none" className="w-3.5 h-3.5 text-white">
+            <path
+              d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"
+              stroke="currentColor"
+              strokeWidth="2"
+              fill="none"
+            />
+            <circle cx="12" cy="12" r="3" fill="currentColor" />
+          </svg>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <h1 className="text-[13px] font-semibold text-[var(--color-text-primary)] tracking-tight">
+            EasyScrcpy
+          </h1>
+          {hasActiveMirrors && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-[var(--color-success-muted)] text-[var(--color-success)] rounded animate-fade-in">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-success)] animate-pulse" />
+              {activeMirrors.size} active
+            </span>
+          )}
+        </div>
       </div>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         {hasActiveMirrors && (
           <button
             onClick={handleStopAll}
-            className="px-2 py-1.5 text-xs text-[var(--color-error)] hover:bg-[var(--color-error)]/10 rounded transition-colors"
+            className="flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-medium text-[var(--color-error)] bg-[var(--color-error-muted)] hover:bg-[var(--color-error)]/20 rounded-md transition-all animate-fade-in"
             title="Stop all mirrors (Cmd+Shift+S)"
           >
+            <svg viewBox="0 0 24 24" fill="none" className="w-3 h-3">
+              <rect x="6" y="6" width="12" height="12" rx="1" fill="currentColor" />
+            </svg>
             Stop All
           </button>
         )}
@@ -45,7 +66,7 @@ export function Header({ onSettingsClick, onRefresh }: HeaderProps) {
         <button
           onClick={onRefresh}
           disabled={isLoading}
-          className="p-1.5 rounded hover:bg-[var(--color-bg-tertiary)] transition-colors disabled:opacity-50"
+          className="p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] transition-all disabled:opacity-40"
           title="Refresh devices (Cmd+R)"
         >
           <svg
@@ -53,7 +74,7 @@ export function Header({ onSettingsClick, onRefresh }: HeaderProps) {
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
-            className={`w-4 h-4 text-[var(--color-text-muted)] ${isLoading ? "animate-spin" : ""}`}
+            className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
           >
             <path
               strokeLinecap="round"
@@ -65,7 +86,7 @@ export function Header({ onSettingsClick, onRefresh }: HeaderProps) {
 
         <button
           onClick={onSettingsClick}
-          className="p-1.5 rounded hover:bg-[var(--color-bg-tertiary)] transition-colors"
+          className="p-2 rounded-md text-[var(--color-text-muted)] hover:text-[var(--color-text-secondary)] hover:bg-[var(--color-bg-tertiary)] transition-all"
           title="Settings (Cmd+,)"
         >
           <svg
@@ -73,12 +94,12 @@ export function Header({ onSettingsClick, onRefresh }: HeaderProps) {
             fill="none"
             stroke="currentColor"
             strokeWidth="1.5"
-            className="w-4 h-4 text-[var(--color-text-muted)]"
+            className="w-4 h-4"
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
             />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>

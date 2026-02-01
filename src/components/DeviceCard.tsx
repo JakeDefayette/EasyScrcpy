@@ -59,40 +59,57 @@ export function DeviceCard({ device }: DeviceCardProps) {
     setShowLabelModal(false);
   };
 
-  const statusColor = {
-    device: "bg-[var(--color-success)]",
-    offline: "bg-[var(--color-text-muted)]",
-    unauthorized: "bg-[var(--color-warning)]",
-    unknown: "bg-[var(--color-text-muted)]",
-  }[device.status];
-
-  const statusText = {
-    device: "Connected",
-    offline: "Offline",
-    unauthorized: "Unauthorized",
-    unknown: "Unknown",
+  const statusConfig = {
+    device: {
+      color: "bg-[var(--color-success)]",
+      text: "Connected",
+      textColor: "text-[var(--color-success)]",
+    },
+    offline: {
+      color: "bg-[var(--color-text-muted)]",
+      text: "Offline",
+      textColor: "text-[var(--color-text-muted)]",
+    },
+    unauthorized: {
+      color: "bg-[var(--color-warning)]",
+      text: "Unauthorized",
+      textColor: "text-[var(--color-warning)]",
+    },
+    unknown: {
+      color: "bg-[var(--color-text-muted)]",
+      text: "Unknown",
+      textColor: "text-[var(--color-text-muted)]",
+    },
   }[device.status];
 
   return (
     <>
       <div
         className={`
-          group flex items-center gap-3 p-3 rounded-lg border transition-colors
+          group relative flex items-center gap-3 p-3 rounded-lg border transition-all duration-200 hover-lift
           ${isActive
-            ? "bg-[var(--color-accent)]/10 border-[var(--color-accent)]/30"
-            : "bg-[var(--color-bg-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-hover)]"
+            ? "bg-[var(--color-accent-glow)] border-[var(--color-accent)]/40 glow-accent"
+            : "bg-[var(--color-bg-secondary)] border-[var(--color-border)] hover:border-[var(--color-border-hover)] hover:bg-[var(--color-bg-tertiary)]"
           }
         `}
       >
-        {/* Connection type icon */}
-        <div className="flex-shrink-0 w-8 h-8 flex items-center justify-center text-[var(--color-text-muted)]">
+        {/* Connection type indicator */}
+        <div
+          className={`
+            flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center transition-colors
+            ${isActive
+              ? "bg-[var(--color-accent)]/20 text-[var(--color-accent)]"
+              : "bg-[var(--color-bg-tertiary)] text-[var(--color-text-muted)] group-hover:bg-[var(--color-bg-elevated)]"
+            }
+          `}
+        >
           {device.connection_type === "wifi" ? (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
               <path strokeLinecap="round" strokeLinejoin="round" d="M8.288 15.038a5.25 5.25 0 017.424 0M5.106 11.856c3.807-3.808 9.98-3.808 13.788 0M1.924 8.674c5.565-5.565 14.587-5.565 20.152 0M12.53 18.22l-.53.53-.53-.53a.75.75 0 011.06 0z" />
             </svg>
           ) : (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M5.636 5.636a9 9 0 1012.728 12.728M5.636 5.636L18.364 18.364M5.636 5.636L3 3m15.364 15.364l2.636 2.636M12 9v2m0 4h.01" />
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
             </svg>
           )}
         </div>
@@ -100,24 +117,32 @@ export function DeviceCard({ device }: DeviceCardProps) {
         {/* Device info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
-            <span className="text-sm font-medium text-[var(--color-text-primary)] truncate">
+            <span className={`text-[13px] font-medium truncate ${isActive ? "text-[var(--color-text-primary)]" : "text-[var(--color-text-primary)]"}`}>
               {displayName}
             </span>
             <button
               onClick={() => setShowLabelModal(true)}
-              className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--color-bg-tertiary)] transition-opacity"
+              className="opacity-0 group-hover:opacity-100 p-1 rounded hover:bg-[var(--color-bg-elevated)] transition-all"
               title="Edit label"
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3.5 h-3.5 text-[var(--color-text-muted)]">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-3 h-3 text-[var(--color-text-muted)]">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
               </svg>
             </button>
           </div>
+
           <div className="flex items-center gap-2 mt-0.5">
-            <div className={`w-1.5 h-1.5 rounded-full ${statusColor}`} />
-            <span className="text-xs text-[var(--color-text-muted)]">{statusText}</span>
+            <div className="flex items-center gap-1.5">
+              <div className={`w-1.5 h-1.5 rounded-full ${statusConfig.color}`} />
+              <span className={`text-[11px] ${statusConfig.textColor}`}>{statusConfig.text}</span>
+            </div>
             {device.model && device.label && (
-              <span className="text-xs text-[var(--color-text-muted)]">· {device.model}</span>
+              <>
+                <span className="text-[var(--color-text-muted)]">·</span>
+                <span className="text-[11px] text-[var(--color-text-muted)] font-mono truncate">
+                  {device.model}
+                </span>
+              </>
             )}
           </div>
         </div>
@@ -127,17 +152,33 @@ export function DeviceCard({ device }: DeviceCardProps) {
           <button
             onClick={handleStop}
             disabled={isStopping}
-            className="flex-shrink-0 px-3 py-1.5 text-sm font-medium rounded-md bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] hover:bg-[var(--color-border)] disabled:opacity-50 transition-colors"
+            className="flex-shrink-0 px-3 py-1.5 text-[12px] font-medium rounded-md bg-[var(--color-bg-tertiary)] text-[var(--color-text-secondary)] border border-[var(--color-border)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-hover)] disabled:opacity-50 transition-all"
           >
-            {isStopping ? "Stopping..." : "Stop"}
+            {isStopping ? (
+              <span className="flex items-center gap-1.5">
+                <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Stopping
+              </span>
+            ) : "Stop"}
           </button>
         ) : (
           <button
             onClick={handleStart}
             disabled={!isOnline || isStarting}
-            className="flex-shrink-0 px-3 py-1.5 text-sm font-medium rounded-md bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-shrink-0 px-3 py-1.5 text-[12px] font-medium rounded-md bg-[var(--color-accent)] text-white hover:bg-[var(--color-accent-hover)] disabled:opacity-40 disabled:cursor-not-allowed transition-all"
           >
-            {isStarting ? "Starting..." : "Start"}
+            {isStarting ? (
+              <span className="flex items-center gap-1.5">
+                <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                </svg>
+                Starting
+              </span>
+            ) : "Start"}
           </button>
         )}
       </div>
