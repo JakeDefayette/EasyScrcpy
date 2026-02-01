@@ -59,14 +59,17 @@ pub async fn start_mirror(
         args.push("--no-audio".to_string());
     }
 
-    // Orientation: 0=portrait, 1=landscape (90°), 2=upsidedown (180°), 3=reverse_landscape (270°)
+    // Orientation: use --angle to rotate the displayed video
+    // This rotates the window content without changing capture dimensions
     let angle = match options.orientation {
         1 => 90,   // landscape
         3 => 270,  // reverse landscape
         2 => 180,  // upsidedown
         _ => 0,    // portrait
     };
-    args.push(format!("--orientation={}", angle));
+    if angle > 0 {
+        args.push(format!("--angle={}", angle));
+    }
 
     // Quality settings
     args.push(format!("--max-size={}", options.resolution));
