@@ -13,12 +13,12 @@
       "identifier": "shell:allow-spawn",
       "allow": [
         {
-          "name": "binaries/scrcpy",
+          "name": "scrcpy",
           "sidecar": true,
           "args": true
         },
         {
-          "name": "binaries/adb",
+          "name": "adb",
           "sidecar": true,
           "args": true
         }
@@ -28,12 +28,12 @@
       "identifier": "shell:allow-execute",
       "allow": [
         {
-          "name": "binaries/scrcpy",
+          "name": "scrcpy",
           "sidecar": true,
           "args": true
         },
         {
-          "name": "binaries/adb",
+          "name": "adb",
           "sidecar": true,
           "args": true
         }

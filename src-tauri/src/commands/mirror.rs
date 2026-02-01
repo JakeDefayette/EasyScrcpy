@@ -58,7 +58,7 @@ pub async fn start_mirror(
 
     // Spawn scrcpy process
     let (mut rx, child) = shell
-        .sidecar("binaries/scrcpy")
+        .sidecar("scrcpy")
         .map_err(|e| format!("Failed to create scrcpy sidecar: {}", e))?
         .args(&args)
         .spawn()

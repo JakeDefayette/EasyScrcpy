@@ -90,7 +90,7 @@ pub async fn get_devices(app: AppHandle) -> Result<Vec<Device>, String> {
     let shell = app.shell();
 
     let output = shell
-        .sidecar("binaries/adb")
+        .sidecar("adb")
         .map_err(|e| format!("Failed to create adb sidecar: {}", e))?
         .args(["devices", "-l"])
         .output()
@@ -103,6 +103,9 @@ pub async fn get_devices(app: AppHandle) -> Result<Vec<Device>, String> {
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
+
+    // Debug: print raw output
+    eprintln!("[DEBUG] adb devices output:\n{}", stdout);
 
     // Get saved config for labels
     let config = settings::load_config().unwrap_or_default();

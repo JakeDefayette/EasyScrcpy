@@ -14,7 +14,7 @@ pub async fn enable_wifi_mode(app: AppHandle, serial: String) -> Result<WifiMode
 
     // First, enable TCP/IP mode on port 5555
     let output = shell
-        .sidecar("binaries/adb")
+        .sidecar("adb")
         .map_err(|e| format!("Failed to create adb sidecar: {}", e))?
         .args(["-s", &serial, "tcpip", "5555"])
         .output()
@@ -28,7 +28,7 @@ pub async fn enable_wifi_mode(app: AppHandle, serial: String) -> Result<WifiMode
 
     // Get device IP address
     let output = shell
-        .sidecar("binaries/adb")
+        .sidecar("adb")
         .map_err(|e| format!("Failed to create adb sidecar: {}", e))?
         .args(["-s", &serial, "shell", "ip", "route"])
         .output()
@@ -70,7 +70,7 @@ pub async fn connect_wifi_device(
     let address = format!("{}:{}", ip, port);
 
     let output = shell
-        .sidecar("binaries/adb")
+        .sidecar("adb")
         .map_err(|e| format!("Failed to create adb sidecar: {}", e))?
         .args(["connect", &address])
         .output()
