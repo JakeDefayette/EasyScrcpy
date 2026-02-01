@@ -7,7 +7,13 @@ interface SettingsState {
   isLoading: boolean;
   error: string | null;
   fetchConfig: () => Promise<void>;
-  updateSettings: (audioEnabled: boolean, showTouches: boolean) => Promise<void>;
+  updateSettings: (
+    audioEnabled: boolean,
+    showTouches: boolean,
+    orientation: number,
+    resolution: number,
+    bitrate: number,
+  ) => Promise<void>;
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => ({
@@ -26,9 +32,15 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
     }
   },
 
-  updateSettings: async (audioEnabled: boolean, showTouches: boolean) => {
+  updateSettings: async (
+    audioEnabled: boolean,
+    showTouches: boolean,
+    orientation: number,
+    resolution: number,
+    bitrate: number,
+  ) => {
     try {
-      await saveSettingsApi(audioEnabled, showTouches);
+      await saveSettingsApi(audioEnabled, showTouches, orientation, resolution, bitrate);
       const { config } = get();
       if (config) {
         set({
@@ -36,6 +48,9 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
             ...config,
             audio_enabled: audioEnabled,
             show_touches: showTouches,
+            orientation,
+            resolution,
+            bitrate,
           },
         });
       }

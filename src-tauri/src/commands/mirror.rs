@@ -24,6 +24,9 @@ pub struct MirrorOptions {
     pub label: Option<String>,
     pub audio: bool,
     pub show_touches: bool,
+    pub orientation: u8,
+    pub resolution: u16,
+    pub bitrate: u32,
 }
 
 #[tauri::command]
@@ -56,6 +59,29 @@ pub async fn start_mirror(
         args.push("--no-audio".to_string());
     }
 
+    // Orientation settings
+    match options.orientation {
+        1 => {
+            // Landscape: rotate capture 270° and lock orientation
+            args.push("--capture-orientation=@270".to_string());
+        }
+        3 => {
+            // Reverse landscape: rotate capture 90° and lock orientation
+            args.push("--capture-orientation=@90".to_string());
+        }
+        2 => {
+            // Upside down: rotate capture 180° and lock orientation
+            args.push("--capture-orientation=@180".to_string());
+        }
+        _ => {
+            // Portrait - no rotation needed
+        }
+    };
+
+    // Quality settings
+    args.push(format!("--max-size={}", options.resolution));
+    args.push(format!("--video-bit-rate={}", options.bitrate));
+
     // Spawn scrcpy process
     let (mut rx, child) = shell
         .sidecar("scrcpy")
@@ -84,7 +110,11 @@ pub async fn start_mirror(
         use tauri_plugin_shell::process::CommandEvent;
         while let Some(event) = rx.recv().await {
             match event {
-                CommandEvent::Terminated(_) => {
+                CommandEvent::Terminated(payload) => {
+                    eprintln!(
+                        "scrcpy terminated for {}: code={:?}, signal={:?}",
+                        serial, payload.code, payload.signal
+                    );
                     // Clean up when process terminates
                     if let Ok(mut processes) = processes_arc.lock() {
                         processes.remove(&serial);
@@ -93,6 +123,14 @@ pub async fn start_mirror(
                 }
                 CommandEvent::Error(err) => {
                     eprintln!("scrcpy error for {}: {}", serial, err);
+                }
+                CommandEvent::Stdout(line) => {
+                    let text = String::from_utf8_lossy(&line);
+                    eprintln!("scrcpy stdout for {}: {}", serial, text.trim());
+                }
+                CommandEvent::Stderr(line) => {
+                    let text = String::from_utf8_lossy(&line);
+                    eprintln!("scrcpy stderr for {}: {}", serial, text.trim());
                 }
                 _ => {}
             }

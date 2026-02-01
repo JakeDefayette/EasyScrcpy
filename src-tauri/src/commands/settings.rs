@@ -10,6 +10,12 @@ pub struct AppConfig {
     pub audio_enabled: bool,
     #[serde(default = "default_show_touches")]
     pub show_touches: bool,
+    #[serde(default = "default_orientation")]
+    pub orientation: u8,
+    #[serde(default = "default_resolution")]
+    pub resolution: u16,
+    #[serde(default = "default_bitrate")]
+    pub bitrate: u32,
     #[serde(default)]
     pub wifi_devices: Vec<WifiDevice>,
 }
@@ -27,6 +33,18 @@ fn default_audio_enabled() -> bool {
 
 fn default_show_touches() -> bool {
     true
+}
+
+fn default_orientation() -> u8 {
+    1 // Landscape (90° clockwise from portrait)
+}
+
+fn default_resolution() -> u16 {
+    1920 // Default max resolution
+}
+
+fn default_bitrate() -> u32 {
+    8_000_000 // 8 Mbps default
 }
 
 fn get_config_path() -> Result<PathBuf, String> {
@@ -74,9 +92,18 @@ pub fn save_device_label(serial: String, label: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub fn save_settings(audio_enabled: bool, show_touches: bool) -> Result<(), String> {
+pub fn save_settings(
+    audio_enabled: bool,
+    show_touches: bool,
+    orientation: u8,
+    resolution: u16,
+    bitrate: u32,
+) -> Result<(), String> {
     let mut config = load_config().unwrap_or_default();
     config.audio_enabled = audio_enabled;
     config.show_touches = show_touches;
+    config.orientation = orientation;
+    config.resolution = resolution;
+    config.bitrate = bitrate;
     save_config(&config)
 }

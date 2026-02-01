@@ -29,6 +29,9 @@ export function DeviceCard({ device }: DeviceCardProps) {
         label: device.label || device.model || device.serial,
         audio: config?.audio_enabled ?? true,
         show_touches: config?.show_touches ?? true,
+        orientation: config?.orientation ?? 1,
+        resolution: config?.resolution ?? 1920,
+        bitrate: config?.bitrate ?? 8_000_000,
       });
       addActiveMirror(device.serial);
     } catch (e) {
