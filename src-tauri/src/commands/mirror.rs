@@ -62,20 +62,16 @@ pub async fn start_mirror(
     // Orientation settings
     match options.orientation {
         1 => {
-            // Landscape: rotate display 90° and set landscape window
-            args.push("--angle=90".to_string());
-            args.push("--window-width=1200".to_string());
-            args.push("--window-height=800".to_string());
+            // Landscape: rotate capture 270° and lock orientation
+            args.push("--capture-orientation=@270".to_string());
         }
         3 => {
-            // Reverse landscape
-            args.push("--angle=270".to_string());
-            args.push("--window-width=1200".to_string());
-            args.push("--window-height=800".to_string());
+            // Reverse landscape: rotate capture 90° and lock orientation
+            args.push("--capture-orientation=@90".to_string());
         }
         2 => {
-            // Upside down
-            args.push("--angle=180".to_string());
+            // Upside down: rotate capture 180° and lock orientation
+            args.push("--capture-orientation=@180".to_string());
         }
         _ => {
             // Portrait - no rotation needed
@@ -115,7 +111,10 @@ pub async fn start_mirror(
         while let Some(event) = rx.recv().await {
             match event {
                 CommandEvent::Terminated(payload) => {
-                    eprintln!("scrcpy terminated for {}: code={:?}, signal={:?}", serial, payload.code, payload.signal);
+                    eprintln!(
+                        "scrcpy terminated for {}: code={:?}, signal={:?}",
+                        serial, payload.code, payload.signal
+                    );
                     // Clean up when process terminates
                     if let Ok(mut processes) = processes_arc.lock() {
                         processes.remove(&serial);
