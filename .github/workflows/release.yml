@@ -1,0 +1,140 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., 0.1.0)'
+        required: true
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            name: macOS-ARM64
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            name: macOS-Intel
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            name: Windows
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Install frontend dependencies
+        run: bun install
+
+      # macOS: Install Apple Silicon target if building for ARM64 on Intel runner
+      - name: Add macOS ARM64 target
+        if: matrix.target == 'aarch64-apple-darwin'
+        run: rustup target add aarch64-apple-darwin
+
+      # Download and setup external binaries for the target platform
+      - name: Setup external binaries (macOS ARM64)
+        if: matrix.target == 'aarch64-apple-darwin'
+        run: |
+          # Verify binaries exist and are executable
+          chmod +x src-tauri/binaries/scrcpy-aarch64-apple-darwin
+          chmod +x src-tauri/binaries/adb-aarch64-apple-darwin
+
+      - name: Setup external binaries (macOS Intel)
+        if: matrix.target == 'x86_64-apple-darwin'
+        run: |
+          # Download scrcpy and adb for macOS Intel if not present
+          if [ ! -f "src-tauri/binaries/scrcpy-x86_64-apple-darwin" ]; then
+            echo "::warning::scrcpy-x86_64-apple-darwin binary not found. Please add it to src-tauri/binaries/"
+            # Placeholder: Download from official release or build
+            # curl -L -o scrcpy.zip https://github.com/Genymobile/scrcpy/releases/download/v2.7/scrcpy-macos-v2.7.zip
+          fi
+          if [ ! -f "src-tauri/binaries/adb-x86_64-apple-darwin" ]; then
+            echo "::warning::adb-x86_64-apple-darwin binary not found. Please add it to src-tauri/binaries/"
+            # Placeholder: Download from Android SDK platform-tools
+          fi
+          chmod +x src-tauri/binaries/*-x86_64-apple-darwin 2>/dev/null || true
+
+      - name: Setup external binaries (Windows)
+        if: matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          # Verify Windows binaries exist
+          if (-not (Test-Path "src-tauri/binaries/scrcpy-x86_64-pc-windows-msvc.exe")) {
+            Write-Warning "scrcpy-x86_64-pc-windows-msvc.exe binary not found. Please add it to src-tauri/binaries/"
+            # Placeholder: Download from official release
+            # Invoke-WebRequest -Uri "https://github.com/Genymobile/scrcpy/releases/download/v2.7/scrcpy-win64-v2.7.zip" -OutFile scrcpy.zip
+          }
+          if (-not (Test-Path "src-tauri/binaries/adb-x86_64-pc-windows-msvc.exe")) {
+            Write-Warning "adb-x86_64-pc-windows-msvc.exe binary not found. Please add it to src-tauri/binaries/"
+          }
+
+      - name: Build Tauri app
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # macOS code signing (optional - set these secrets for signed builds)
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          # Windows code signing (optional)
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'EasyScrcpy ${{ github.ref_name }}'
+          releaseBody: |
+            See the assets below to download and install EasyScrcpy for your platform.
+
+            ## Installation
+            - **macOS ARM64 (M1/M2/M3):** Download the `.dmg` file
+            - **macOS Intel:** Download the `_x64.dmg` file
+            - **Windows:** Download the `.msi` or `.exe` installer
+
+            ## Requirements
+            - Android device with USB debugging enabled
+            - USB cable connected to your computer
+          releaseDraft: true
+          prerelease: false
+          args: --target ${{ matrix.target }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: EasyScrcpy-${{ matrix.name }}
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app
+            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+          if-no-files-found: ignore
