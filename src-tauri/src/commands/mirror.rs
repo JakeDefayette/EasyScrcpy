@@ -59,17 +59,28 @@ pub async fn start_mirror(
         args.push("--no-audio".to_string());
     }
 
-    // Orientation: use --orientation to capture in landscape mode
-    // This makes the device render content in landscape, creating a landscape window
-    let angle = match options.orientation {
-        1 => 90,   // landscape
-        3 => 270,  // reverse landscape
-        2 => 180,  // upsidedown
-        _ => 0,    // portrait
+    // Orientation settings
+    match options.orientation {
+        1 => {
+            // Landscape: rotate display 90° and set landscape window
+            args.push("--angle=90".to_string());
+            args.push("--window-width=1200".to_string());
+            args.push("--window-height=800".to_string());
+        }
+        3 => {
+            // Reverse landscape
+            args.push("--angle=270".to_string());
+            args.push("--window-width=1200".to_string());
+            args.push("--window-height=800".to_string());
+        }
+        2 => {
+            // Upside down
+            args.push("--angle=180".to_string());
+        }
+        _ => {
+            // Portrait - no rotation needed
+        }
     };
-    if angle > 0 {
-        args.push(format!("--orientation={}", angle));
-    }
 
     // Quality settings
     args.push(format!("--max-size={}", options.resolution));
