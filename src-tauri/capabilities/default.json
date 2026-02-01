@@ -1,0 +1,43 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    "shell:allow-open",
+    "shell:allow-stdin-write",
+    "shell:allow-kill",
+    {
+      "identifier": "shell:allow-spawn",
+      "allow": [
+        {
+          "name": "binaries/scrcpy",
+          "sidecar": true,
+          "args": true
+        },
+        {
+          "name": "binaries/adb",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    },
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "binaries/scrcpy",
+          "sidecar": true,
+          "args": true
+        },
+        {
+          "name": "binaries/adb",
+          "sidecar": true,
+          "args": true
+        }
+      ]
+    }
+  ]
+}
