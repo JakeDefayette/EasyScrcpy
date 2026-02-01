@@ -59,8 +59,8 @@ pub async fn start_mirror(
         args.push("--no-audio".to_string());
     }
 
-    // Orientation: use --angle to rotate the displayed video
-    // This rotates the window content without changing capture dimensions
+    // Orientation: use --orientation to capture in landscape mode
+    // This makes the device render content in landscape, creating a landscape window
     let angle = match options.orientation {
         1 => 90,   // landscape
         3 => 270,  // reverse landscape
@@ -68,7 +68,7 @@ pub async fn start_mirror(
         _ => 0,    // portrait
     };
     if angle > 0 {
-        args.push(format!("--angle={}", angle));
+        args.push(format!("--orientation={}", angle));
     }
 
     // Quality settings
