@@ -24,6 +24,9 @@ pub struct MirrorOptions {
     pub label: Option<String>,
     pub audio: bool,
     pub show_touches: bool,
+    pub orientation: u8,
+    pub resolution: u16,
+    pub bitrate: u32,
 }
 
 #[tauri::command]
@@ -55,6 +58,13 @@ pub async fn start_mirror(
     } else {
         args.push("--no-audio".to_string());
     }
+
+    // Orientation (0=portrait, 1=landscape, 2=upsidedown, 3=reverse_landscape)
+    args.push(format!("--rotation={}", options.orientation));
+
+    // Quality settings
+    args.push(format!("--max-size={}", options.resolution));
+    args.push(format!("--video-bit-rate={}", options.bitrate));
 
     // Spawn scrcpy process
     let (mut rx, child) = shell

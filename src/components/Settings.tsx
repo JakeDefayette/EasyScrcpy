@@ -6,18 +6,83 @@ interface SettingsProps {
   onClose: () => void;
 }
 
+const ORIENTATION_OPTIONS = [
+  { value: 0, label: "Portrait", icon: "M12 18.375a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" },
+  { value: 1, label: "Landscape", icon: "M4.5 18.75a4.5 4.5 0 004.5-4.5v-1.125a4.5 4.5 0 00-4.5-4.5h-1.125a4.5 4.5 0 00-4.5 4.5v1.125a4.5 4.5 0 004.5 4.5H4.5zm0-2.25h-1.125a2.25 2.25 0 01-2.25-2.25v-1.125a2.25 2.25 0 012.25-2.25H4.5a2.25 2.25 0 012.25 2.25v1.125a2.25 2.25 0 01-2.25 2.25zM15 18.75a4.5 4.5 0 004.5-4.5v-1.125a4.5 4.5 0 00-4.5-4.5h-1.125a4.5 4.5 0 00-4.5 4.5v1.125a4.5 4.5 0 004.5 4.5H15zm0-2.25h-1.125a2.25 2.25 0 01-2.25-2.25v-1.125a2.25 2.25 0 012.25-2.25H15a2.25 2.25 0 012.25 2.25v1.125a2.25 2.25 0 01-2.25 2.25z" },
+  { value: 3, label: "Reverse Landscape", icon: "M21 18.75a4.5 4.5 0 01-4.5-4.5v-1.125a4.5 4.5 0 014.5-4.5h1.125a4.5 4.5 0 014.5 4.5v1.125a4.5 4.5 0 01-4.5 4.5H21zm0-2.25h1.125a2.25 2.25 0 002.25-2.25v-1.125a2.25 2.25 0 00-2.25-2.25H21a2.25 2.25 0 00-2.25 2.25v1.125a2.25 2.25 0 002.25 2.25zM10.5 18.75a4.5 4.5 0 01-4.5-4.5v-1.125a4.5 4.5 0 014.5-4.5h1.125a4.5 4.5 0 014.5 4.5v1.125a4.5 4.5 0 01-4.5 4.5H10.5zm0-2.25h1.125a2.25 2.25 0 002.25-2.25v-1.125a2.25 2.25 0 00-2.25-2.25H10.5a2.25 2.25 0 00-2.25 2.25v1.125a2.25 2.25 0 002.25 2.25z" },
+];
+
+const RESOLUTION_OPTIONS = [
+  { value: 1280, label: "720p (HD)" },
+  { value: 1920, label: "1080p (FHD)" },
+  { value: 2560, label: "1440p (QHD)" },
+  { value: 3840, label: "4K (UHD)" },
+];
+
+const BITRATE_OPTIONS = [
+  { value: 2_000_000, label: "2 Mbps" },
+  { value: 4_000_000, label: "4 Mbps" },
+  { value: 8_000_000, label: "8 Mbps" },
+  { value: 16_000_000, label: "16 Mbps" },
+];
+
 export function Settings({ onClose }: SettingsProps) {
   const { config, updateSettings } = useSettingsStore();
   const [showAdvanced, setShowAdvanced] = useState(false);
 
   const handleAudioToggle = async () => {
     if (!config) return;
-    await updateSettings(!config.audio_enabled, config.show_touches);
+    await updateSettings(
+      !config.audio_enabled,
+      config.show_touches,
+      config.orientation,
+      config.resolution,
+      config.bitrate,
+    );
   };
 
   const handleTouchesToggle = async () => {
     if (!config) return;
-    await updateSettings(config.audio_enabled, !config.show_touches);
+    await updateSettings(
+      config.audio_enabled,
+      !config.show_touches,
+      config.orientation,
+      config.resolution,
+      config.bitrate,
+    );
+  };
+
+  const handleOrientationChange = async (orientation: number) => {
+    if (!config) return;
+    await updateSettings(
+      config.audio_enabled,
+      config.show_touches,
+      orientation,
+      config.resolution,
+      config.bitrate,
+    );
+  };
+
+  const handleResolutionChange = async (resolution: number) => {
+    if (!config) return;
+    await updateSettings(
+      config.audio_enabled,
+      config.show_touches,
+      config.orientation,
+      resolution,
+      config.bitrate,
+    );
+  };
+
+  const handleBitrateChange = async (bitrate: number) => {
+    if (!config) return;
+    await updateSettings(
+      config.audio_enabled,
+      config.show_touches,
+      config.orientation,
+      config.resolution,
+      bitrate,
+    );
   };
 
   return (
@@ -100,6 +165,80 @@ export function Settings({ onClose }: SettingsProps) {
                 }`}
               />
             </button>
+          </div>
+
+          {/* Orientation Section */}
+          <div className="pt-3 border-t border-[var(--color-border-subtle)]">
+            <div className="flex items-center gap-3 mb-2 px-2">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-tertiary)] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[var(--color-text-muted)]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Orientation</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Default screen rotation</p>
+              </div>
+            </div>
+            <div className="flex gap-2 px-2">
+              {ORIENTATION_OPTIONS.map((option) => (
+                <button
+                  key={option.value}
+                  onClick={() => handleOrientationChange(option.value)}
+                  className={`flex-1 flex flex-col items-center gap-1.5 p-2 rounded-lg border transition-all ${
+                    config?.orientation === option.value
+                      ? "bg-[var(--color-accent)]/10 border-[var(--color-accent)] text-[var(--color-accent)]"
+                      : "bg-[var(--color-bg-tertiary)] border-[var(--color-border)] text-[var(--color-text-muted)] hover:border-[var(--color-border-hover)]"
+                  }`}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4">
+                    <path strokeLinecap="round" strokeLinejoin="round" d={option.icon} />
+                  </svg>
+                  <span className="text-[10px] font-medium">{option.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quality Settings */}
+          <div className="pt-3 border-t border-[var(--color-border-subtle)]">
+            <div className="flex items-center gap-3 mb-2 px-2">
+              <div className="w-8 h-8 rounded-lg bg-[var(--color-bg-tertiary)] flex items-center justify-center">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-4 h-4 text-[var(--color-text-muted)]">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.048 4.025a3 3 0 01-4.872 3.432 2.25 2.25 0 00-.75-.158H3.96a2.25 2.25 0 01-2.052-1.336l-1.107-2.48a1.5 1.5 0 011.27-2.155h4.505a2.25 2.25 0 012.052 1.336l.473 1.06a3 3 0 003.388 1.621zm7.878-7.878a3 3 0 00-3.388-1.621m5.048 4.025a3 3 0 014.872 3.432 2.25 2.25 0 00.75.158h1.156a2.25 2.25 0 012.052 1.336l1.107 2.48a1.5 1.5 0 01-1.27 2.155h-4.505a2.25 2.25 0 01-2.052-1.336l-.473-1.06a3 3 0 00-3.388-1.621z" />
+                </svg>
+              </div>
+              <div>
+                <p className="text-[13px] font-medium text-[var(--color-text-primary)]">Quality</p>
+                <p className="text-[10px] text-[var(--color-text-muted)]">Resolution & bitrate</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-2 px-2">
+              <div>
+                <label className="block text-[10px] font-medium text-[var(--color-text-muted)] mb-1">Resolution</label>
+                <select
+                  value={config?.resolution ?? 1920}
+                  onChange={(e) => handleResolutionChange(Number(e.target.value))}
+                  className="w-full px-2 py-1.5 text-[12px] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-md text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+                >
+                  {RESOLUTION_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-[10px] font-medium text-[var(--color-text-muted)] mb-1">Bitrate</label>
+                <select
+                  value={config?.bitrate ?? 8_000_000}
+                  onChange={(e) => handleBitrateChange(Number(e.target.value))}
+                  className="w-full px-2 py-1.5 text-[12px] bg-[var(--color-bg-tertiary)] border border-[var(--color-border)] rounded-md text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors"
+                >
+                  {BITRATE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
           </div>
         </div>
 

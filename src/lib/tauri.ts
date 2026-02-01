@@ -12,6 +12,9 @@ export interface AppConfig {
   device_labels: Record<string, string>;
   audio_enabled: boolean;
   show_touches: boolean;
+  orientation: number;
+  resolution: number;
+  bitrate: number;
   wifi_devices: WifiDevice[];
 }
 
@@ -26,6 +29,9 @@ export interface MirrorOptions {
   label: string | null;
   audio: boolean;
   show_touches: boolean;
+  orientation: number;
+  resolution: number;
+  bitrate: number;
 }
 
 export interface WifiModeResult {
@@ -61,8 +67,14 @@ export async function saveDeviceLabel(serial: string, label: string): Promise<vo
   return invoke<void>("save_device_label", { serial, label });
 }
 
-export async function saveSettings(audioEnabled: boolean, showTouches: boolean): Promise<void> {
-  return invoke<void>("save_settings", { audioEnabled, showTouches });
+export async function saveSettings(
+  audioEnabled: boolean,
+  showTouches: boolean,
+  orientation: number,
+  resolution: number,
+  bitrate: number,
+): Promise<void> {
+  return invoke<void>("save_settings", { audioEnabled, showTouches, orientation, resolution, bitrate });
 }
 
 export async function enableWifiMode(serial: string): Promise<WifiModeResult> {
