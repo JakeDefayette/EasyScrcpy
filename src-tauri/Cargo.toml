@@ -1,6 +1,6 @@
 [package]
 name = "easyscrcpy"
-version = "0.1.0"
+version = "0.1.1"
 description = "Cross-platform GUI for Android screen mirroring with scrcpy"
 authors = ["SimVS"]
 edition = "2021"
