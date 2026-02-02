@@ -41,7 +41,14 @@
     ],
     "resources": {
       "binaries/AdbWinApi.dll": "AdbWinApi.dll",
-      "binaries/AdbWinUsbApi.dll": "AdbWinUsbApi.dll"
+      "binaries/AdbWinUsbApi.dll": "AdbWinUsbApi.dll",
+      "binaries/SDL2.dll": "SDL2.dll",
+      "binaries/libusb-1.0.dll": "libusb-1.0.dll",
+      "binaries/avcodec-61.dll": "avcodec-61.dll",
+      "binaries/avformat-61.dll": "avformat-61.dll",
+      "binaries/avutil-59.dll": "avutil-59.dll",
+      "binaries/swresample-5.dll": "swresample-5.dll",
+      "binaries/scrcpy-server": "scrcpy-server"
     },
     "windows": {
       "wix": {
