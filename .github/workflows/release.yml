@@ -104,7 +104,11 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Note: For signed builds, add these secrets to your repository:
+          # Default to ad-hoc signing so Apple Silicon downloads are a valid
+          # macOS app bundle even when CI does not have Apple signing secrets.
+          # Override this with a real Developer ID identity secret when ready.
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY != '' && secrets.APPLE_SIGNING_IDENTITY || '-' }}
+          # For notarized builds, add these secrets to your repository:
           # APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
           # APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (macOS)
           # TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD (Windows)
@@ -125,6 +129,12 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }}
+
+      - name: Verify macOS app bundle signature
+        if: matrix.platform == 'macos-latest'
+        run: |
+          bash scripts/verify-macos-bundle.sh \
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/EasyScrcpy.app
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
