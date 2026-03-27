@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 #[allow(unused_imports)]
 use std::sync::{Arc, Mutex};
-use tauri::{AppHandle, State};
+use tauri::{AppHandle, Manager, State};
 use tauri_plugin_shell::process::CommandChild;
 use tauri_plugin_shell::ShellExt;
 
@@ -82,11 +82,19 @@ pub async fn start_mirror(
     args.push(format!("--max-size={}", options.resolution));
     args.push(format!("--video-bit-rate={}", options.bitrate));
 
-    // Spawn scrcpy process
+    // Resolve the scrcpy-server path from bundled resources
+    let server_path = app
+        .path()
+        .resource_dir()
+        .map_err(|e| format!("Failed to resolve resource dir: {}", e))?
+        .join("scrcpy-server");
+
+    // Spawn scrcpy process with SCRCPY_SERVER_PATH so it can find the server
     let (mut rx, child) = shell
         .sidecar("scrcpy")
         .map_err(|e| format!("Failed to create scrcpy sidecar: {}", e))?
         .args(&args)
+        .env("SCRCPY_SERVER_PATH", server_path.to_string_lossy().as_ref())
         .spawn()
         .map_err(|e| format!("Failed to spawn scrcpy: {}", e))?;
 
