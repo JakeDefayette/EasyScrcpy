@@ -104,9 +104,15 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Note: For signed builds, add these secrets to your repository:
-          # APPLE_CERTIFICATE, APPLE_CERTIFICATE_PASSWORD, APPLE_SIGNING_IDENTITY,
-          # APPLE_ID, APPLE_PASSWORD, APPLE_TEAM_ID (macOS)
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          # Default to ad-hoc signing so Apple Silicon downloads are a valid
+          # macOS app bundle even when CI does not have Apple signing secrets.
+          # Override this with your real Developer ID identity via secrets.
+          APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY != '' && secrets.APPLE_SIGNING_IDENTITY || '-' }}
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           # TAURI_SIGNING_PRIVATE_KEY, TAURI_SIGNING_PRIVATE_KEY_PASSWORD (Windows)
         with:
           tagName: ${{ github.ref_name }}
@@ -125,6 +131,21 @@ jobs:
           releaseDraft: true
           prerelease: false
           args: --target ${{ matrix.target }}
+
+      - name: Verify macOS app bundle signature
+        if: matrix.platform == 'macos-latest'
+        run: |
+          bash scripts/verify-macos-bundle.sh \
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/EasyScrcpy.app
+
+      - name: Verify macOS notarization ticket
+        if: matrix.platform == 'macos-latest' && env.APPLE_CERTIFICATE != ''
+        run: |
+          dmg_path=$(echo src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg)
+          app_path=src-tauri/target/${{ matrix.target }}/release/bundle/macos/EasyScrcpy.app
+
+          xcrun stapler validate "$app_path"
+          xcrun stapler validate "$dmg_path"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
