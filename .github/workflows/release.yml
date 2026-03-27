@@ -139,7 +139,7 @@ jobs:
             src-tauri/target/${{ matrix.target }}/release/bundle/macos/EasyScrcpy.app
 
       - name: Verify macOS notarization ticket
-        if: matrix.platform == 'macos-latest' && secrets.APPLE_CERTIFICATE != '' && secrets.APPLE_CERTIFICATE_PASSWORD != '' && secrets.APPLE_SIGNING_IDENTITY != '' && secrets.APPLE_ID != '' && secrets.APPLE_PASSWORD != '' && secrets.APPLE_TEAM_ID != ''
+        if: matrix.platform == 'macos-latest' && env.APPLE_CERTIFICATE != ''
         run: |
           dmg_path=$(echo src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg)
           app_path=src-tauri/target/${{ matrix.target }}/release/bundle/macos/EasyScrcpy.app
